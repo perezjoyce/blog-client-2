@@ -21,10 +21,10 @@
   <div id="loginForm" class="modal">
     <div class="modal-content">
       <h4>Log In</h4>
-        <form action="login-user" method="post">
+        <form action="{{url('login-user')}}" method="post">
         {{ csrf_field() }}
-            <input type="email" name="email" id="email" placeholder="Email">
-            <input type="password" name="password" id="password" placeholder="Password">
+            <input type="email" name="login-email" id="login-email" placeholder="Email">
+            <input type="password" name="login-password" id="login-password" placeholder="Password">
             <input type="submit" value="Login" class='btn'>
         </form>
     </div>
@@ -35,9 +35,9 @@
     <div class="modal-content">
       <h4>Log Out</h4>
       <p>Do you want to log out?</p>
-        <form action="logout" method="post">
+        <form action="{{url('logout')}}" method="post">
           {{ csrf_field() }}
-            <input type="hidden" name="_id" id="_id" value="{{ $user->user->_id }}">
+            <input type="hidden" name="_id" id="_id" value="{{ $user->_id }}">
             <input type="submit" value="Logout" class='btn'>
         </form>
       </div>

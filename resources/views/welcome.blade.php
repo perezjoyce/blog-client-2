@@ -1,8 +1,16 @@
 @extends('../layouts/template')
 
-@section('title', 'Dashboard')
-
 @section('user_body')
+
+    @if(Session::has("successMessage"))
+	<div class="alert alert-success">
+		{{ Session::get('successMessage') }}
+	</div>
+	@elseif(Session::has("errorMessage"))
+	<div class="alert alert-danger">
+		{{ Session::get('errorMessage') }}
+	</div>
+	@endif
 
   <div class="section no-pad-bot" id="index-banner">
     <div class="container">
@@ -20,65 +28,25 @@
   </div>
 
   <div class="container">
-    <div class="section">
-
-      <!--   Icon Section   -->
-      <div class="row">
-            <div class="col s12 m4">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="images/sample-1.jpg">
-                        <span class="card-title">Card Title</span>
-                    </div>
-                    <div class="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.
-                        I am convenient because I require little markup to use effectively.</p>
-                    </div>
-                    <div class="card-action">
-                        <a href="#">This is a link</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col s12 m4">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="images/sample-1.jpg">
-                        <span class="card-title">Card Title</span>
-                    </div>
-                    <div class="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.
-                        I am convenient because I require little markup to use effectively.</p>
-                    </div>
-                    <div class="card-action">
-                        <a href="#">This is a link</a>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col s12 m4">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="images/sample-1.jpg">
-                        <span class="card-title">Card Title</span>
-                    </div>
-                    <div class="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.
-                        I am convenient because I require little markup to use effectively.</p>
-                    </div>
-                    <div class="card-action">
-                        <a href="#">This is a link</a>
-                    </div>
-                </div>
-            </div>
-
-        
-
-        
-      </div>
-
+    <div class="row">
+      @foreach($blogPosts as $blogPost)
+        @if($blogPost->isFree === true)
+          <div class="col s12 m4 l4">
+          <br><br>
+              <div class="card">
+                  <div class="card-image">
+                      <img src="images/sample-1.jpg">
+                      <span class="card-title">{{ $blogPost->title }}</span>
+                  </div>
+                  <div class="card-content">
+                    <p>{{ $blogPost->isFree }}</p>
+                      <p>{{ $blogPost->synopsis }}</p>
+                  </div>
+                  <a href="get-blogpost/{{ $blogPost->_id }}">Read</a>
+              </div>
+          </div>
+        @endif
+      @endforeach
     </div>
-    <br><br>
   </div>
-@endsection
+@stop

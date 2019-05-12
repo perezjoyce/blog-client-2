@@ -1,34 +1,16 @@
 <?php
 use GuzzleHttp\Client;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BlogPostController;
 
-//HOME PAGE
-Route::get('/', function () {
-    $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2QyMDY5MTc0NzIzMzc2NjQzZDUxNjEiLCJpYXQiOjE1NTcyNjgxMTN9.s4rmFMBVF9SncjEie8WjDOxEgKZUS20HOVMIEmo7zbo';
-    
-    $headers = [
-        'Authorization' => 'Bearer ' . $token,
-        'Accept' => 'application/json'
-    ];
 
-    $client = new Client([
-        'base_uri' => 'http://127.0.0.1:3000',
-        'timeout'  => 2.0,
-    ]);
+//PAGES
+Route::get('/', 'BlogPostController@displayAllBlogPosts');
 
-    return view('welcome');
+Route::get('dashboard', 'UserController@getDashboard');
 
-    // $response = $client->request('GET', 'users/me', [
-    //     'headers' => $headers
-    // ]);
-    
-    // $jsonCurrentUser = json_decode($response->getBody());
-    
-    // dd($jsonCurrentUser);
-    // echo "<h1>" . $jsonCurrentUser->name . "</h1>";
-    // echo "<h1>" . $jsonCurrentUser->email . "</h1>";
-});
 
+//USER
 Route::get('register', function () {
     return view('templates.register');
 })->name('register');
@@ -37,6 +19,28 @@ Route::post('create-user', 'UserController@createUser');
 
 Route::post('login-user', 'UserController@loginUser');
 
-Route::post('logout' , 'UserController@logoutUser')->name('logout');
+Route::post('logout' , 'UserController@logoutUser');
 
-Route::delete('delete-user', 'UserController@deleteUser');
+Route::post('delete-user', 'UserController@deleteUser');
+
+Route::post('edit-user', 'UserController@editUser');
+
+
+//BLOG POSTS
+Route::post('create-blog-post', 'BlogPostController@createBlogPost');
+
+Route::get('get-blogpost/{blogPostId}', 'BlogPostController@getBlogPost');
+
+Route::get('blogpost-premium/{blogPostId}', 'BlogPostController@displayPremiumBlogPost');
+
+Route::get('blogpost/{blogPostId}', 'BlogPostController@displayBlogPost');
+
+Route::get('blogposts', 'BlogPostController@displayAllBlogPosts');
+
+Route::post('delete-blogpost', 'BlogPostController@deleteBlogPost');
+
+Route::get('edit-blogpost/{blogPostId}', 'BlogPostController@editBlogPostForm');
+
+Route::post('save-blogpost-edits/{blogPostId}', 'BlogPostController@saveBlogPostEdits');
+
+

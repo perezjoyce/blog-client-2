@@ -1,5 +1,4 @@
 body {
-    color: #333333;
     font-family: Arial, Helvetica, sans-serif;
     /* max-width: 650px; */
     margin: auto;
@@ -8,40 +7,80 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    /* font-size: 14px; */
+    line-height: 1.8;
+    color: #333;
+    background-color: #f5f5f5;
 }
-
+nav#main-nav {
+  background-color: #f5f5f5;
+}
 .main-content {
-    /* main content should 
-    take up all leftover space */
     flex-grow: 1; 
 }
-
-.nav-link {
-    color: #888888;
-    margin-right: 16px;
-    text-decoration: none;
+footer#main-footer {
+  background-color:#1d2b36!important;
+}
+hr.line{
+  border: .4px solid #405261;
+}
+p.f-p,
+a.f-link{
+  color:#405261!important;
+  font-weight: 500;
+}
+.heavy-text {
+  font-weight:700;
+}
+p.label-text {
+  font-size: 0.8rem!important;
+  color: #9e9e9e!important;
+}
+.mt-2{
+  margin-top:2em!important;
+}
+.mt-5{
+  margin-top:5em;
+}
+.mt-7{
+  margin-top:7em;
 }
 
- .icon-block {
-    padding: 0 15px;
-  }
-  .icon-block .material-icons {
-      font-size: inherit;
-  }
+img#featured-article-img {
+  width:auto;
+  height:400px;
+}
+/* #register-modal{
+  background-image: url('images/register-image-1.png');
+  background-size:contain;
+  background-repeat:no-repeat;
+  height:15vh;
+  position: relative;
+  background-position-y: bottom;
+  background-position-x: right;
+} */
 
+.small-text{
+  font-size:10px;
+  font-weight:700;
+}
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+    font-size: inherit;
+}
 .modal { 
     width: 30% !important; 
     height: 75% !important; 
 }  
-
-
 .demo-dfree {
   position: relative;
   width: 690px;
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2);
   text-align: left;
   color: #626262;
-  font-family: Lato;
+  /* font-family: Lato; */
   font-size: 14px;
   padding: 20px;
 }
@@ -50,13 +89,13 @@ body {
 }
 .demo-dfree h1 {
   color: #1976d2;
-  font-family: Aileron !important;
+  /* font-family: Aileron !important; */
   font-size: 2em;
   font-weight: bold;
 }
 .demo-dfree h2 {
   color: #1976d2;
-  font-family: Aileron;
+  /* font-family: Aileron; */
   font-size: 2em;
   font-weight: bold;
 }
@@ -65,7 +104,7 @@ body {
   color: #403f42;
   font-weight: bold;
   color: inherit;
-  font-family: Aileron;
+  /* font-family: Aileron; */
 }
 .demo-dfree h2,
 .demo-dfree h3 {
@@ -89,7 +128,7 @@ body {
 .demo-dfree textarea {
   display: none;
 }
-.demo-dfree .dfree-header {
+.demo-dfree {
   font-size: 2.4em;
   text-align: center;
   margin: 10px;

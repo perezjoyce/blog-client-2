@@ -6,14 +6,50 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Uri;
 use Session;
 use Redirect;
+use function GuzzleHttp\json_encode;
+use Symfony\Component\HttpFoundation\File\File;
 
 class BlogPostController extends Controller
 {   
 
-    public function displayAllBlogPosts() {
+    public function displayHomePage(Request $request) {
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  =>2.0,
+            'headers' => $headers
+        ]);
+            
+        $response = $client->get('/finalBlogPosts');
+        $blogPosts = json_decode($response->getBody());
+
+        try {
+            $userId = Session::get('_id');
+            $response2 = $client->get('/users/'. $userId);
+            $user = json_decode($response2->getBody());
+            return view('welcome')->with(compact('blogPosts', 'user'));
+        } catch (\Exception $e) {
+
+            return view('welcome')->with(compact('blogPosts'));
+        }
+        
+    }
+
+
+    public function displayAllBlogPosts(Request $request) {
+
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
     
+        $token = $request->session()->get('token');    
+
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -43,8 +79,9 @@ class BlogPostController extends Controller
 
     public function getBlogPost(Request $request, $blogPostId) {
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-        
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
+
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -79,8 +116,9 @@ class BlogPostController extends Controller
 
     public function displayBlogPost(Request $request, $blogPostId){
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
+
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -96,13 +134,22 @@ class BlogPostController extends Controller
 
         $blogPost = json_decode($response->getBody());
 
-        return view('templates.article')->with(compact('blogPost'));
+        try {
+            $userId = Session::get('_id');
+            $response = $client->get('/users/'. $userId);
+            $user = json_decode($response->getBody());
+            return view('templates.article')->with(compact('blogPost', 'user'));
+        } catch (\Exception $e) {
+            return view('templates.article')->with(compact('blogPost'));
+        }
+
     }
 
     public function displayPremiumBlogPost(Request $request, $blogPostId){
         
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
+
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -118,27 +165,53 @@ class BlogPostController extends Controller
 
         $blogPost = json_decode($response->getBody());
 
+        try {
+            $userId = Session::get('_id');
+            $response2 = $client->get('/users/'. $userId);
+            $user = json_decode($response2->getBody());
+            return view('templates.article-premium')->with(compact('blogPost', 'user'));
+        } catch (\Exception $e) {
+            return view('templates.article-premium')->with(compact('blogPost'));
+        }
+    }
+
+    public function writeBlogPostForm(Request $request) {
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  => 2.0,
+            'headers' => $headers
+        ]);
+
         $userId = Session::get('_id');
-        $response2 = $client->get('/users/'. $userId);
-        $user = json_decode($response2->getBody());
-        return view('templates.article-premium')->with(compact('blogPost', 'user'));
+        $response = $client->get('/users/'. $userId);
+        $user = json_decode($response->getBody());
+        
+        return view('templates.write-article')->with(compact('user'));
     }
 
     public function createBlogPost(Request $request) {
+
+        $token = $request->session()->get('token');    
         $blogPostData = [
             'author' => $request->input('author'),
             'title' => $request->input('title'),
             'synopsis' => $request->input('synopsis'),
             'category' => $request->input('category'),
-            'isFree' => $request->input('isFree'),
+            'isFree' => $request->input('isFree') === "true" ? true : false,
+            'isFeatured' => $request->input('isFeatured') == "on" ? true : false,
             'status' => $request->input('status'),
-            'body' => $request->input('body')
+            'body' => html_entity_decode($request->input('body'))
         ];
-
+        
         $userId = Session::get('_id');
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -146,31 +219,53 @@ class BlogPostController extends Controller
 
         $client = new Client([
             'base_uri' => 'http://127.0.0.1:3000',
-            'timeout'  => 2.0,
+            'timeout'  => 5.0,
             'headers' => $headers
         ]);
         
-        
-        $response = $client->post('blogPosts', [
+        $response = $client->post('/blogPosts', [
             'json' => $blogPostData
         ]);
 
         $blogPost = json_decode($response->getBody());
 
-        $userReponse = $client->get('/users/'. $userId);
-        
-        $user = json_decode($userReponse->getBody());
+        // $userReponse = $client->get('/users/'. $userId);
+        // $user = json_decode($userReponse->getBody());
 
-        Session::flash("successMessage", "Changes have been saved.");
-        return view('templates.article')->with((compact('blogPost', 'user')));
+        try {
+
+            $contents = file_get_contents($request->photo->path());
+
+            $client2 = new Client([
+                'base_uri' => 'http://127.0.0.1:3000',
+                'timeout'  => 5.0,
+                'headers' => $headers
+            ]);
+    
+            $client2->request('POST', '/blogPosts/' . $blogPost->_id . '/photo', [
+                'multipart' =>  [
+                    [
+                        'name'     => 'photo',
+                        'contents' => $contents,
+                        'filename' => $request->file('photo')->getClientOriginalName()
+                    ]
+                ]
+            ]);
+    
+            Session::flash("successMessage", "Blog post has been successfully saved!");
+            return redirect('get-blogpost/'. $blogPost->_id);
+        } catch (\Exception $e) {
+            Session::flash("errorMessage", "ERROR: File is too large!");
+            return Redirect::back();
+        }
 
     }
 
     public function deleteBlogPost(Request $request){
         $blogPostId = $request->input('deleteBlogId');
         $blogPostTitle = $request->input('deleteBlogTitle');
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -189,8 +284,8 @@ class BlogPostController extends Controller
 
     public function editBlogPostForm(Request $request, $blogPostId){
       
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');    
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -214,18 +309,18 @@ class BlogPostController extends Controller
 
     public function saveBlogPostEdits(Request $request, $blogPostId) {
 
+        $token = $request->session()->get('token'); 
         $blogPostData = [
             'author' => $request->input('author'),
             'title' => $request->input('title'),
             'synopsis' => $request->input('synopsis'),
             'category' => $request->input('category'),
-            'isFree' => $request->input('isFree'),
+            'isFree' => $request->input('isFree') === "true" ? true : false,
+            'isFeatured' => $request->input('isFeatured') == "on" ? true : false,
             'status' => $request->input('status'),
-            'body' => $request->input('body')
+            'body' => html_entity_decode($request->input('body'))
         ];
- 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+   
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -233,7 +328,7 @@ class BlogPostController extends Controller
 
         $client = new Client([
             'base_uri' => 'http://127.0.0.1:3000',
-            'timeout'  => 2.0,
+            'timeout'  => 5.0,
             'headers' => $headers
         ]);
 
@@ -241,11 +336,43 @@ class BlogPostController extends Controller
             'json' => $blogPostData
         ]);
 
-        Session::flash("successMessage", "Changes have been successfully saved!");
-        // $blogPost = json_decode($response->getBody());
-        // $userId = Session::get('_id');
-        // $response2 = $client->get('/users/'. $userId);
-        // $user = json_decode($response2->getBody());
-        return Redirect::back();
+        if(!$request->photo) {
+     
+            Session::flash("successMessage", "Changes have been successfully saved!");
+            return Redirect::back();
+
+        } else {
+
+            try {
+                $blogPost = json_decode($response->getBody());
+
+                $contents = file_get_contents($request->photo->path());
+    
+                $client2 = new Client([
+                    'base_uri' => 'http://127.0.0.1:3000',
+                    'timeout'  => 5.0,
+                    'headers' => $headers
+                ]);
+    
+                $client2->request('POST', '/blogPosts/' . $blogPost->_id . '/photo', [
+                    'multipart' =>  [
+                        [
+                            'name'     => 'photo',
+                            'contents' => $contents,
+                            'filename' => $request->file('photo')->getClientOriginalName()
+                        ]
+                    ]
+                ]);
+    
+                Session::flash("successMessage", "Changes have been successfully saved!");
+                return Redirect::back();
+            } catch (\Exception $e) {
+                Session::flash("errorMessage", "ERROR: File is too large!");
+                return Redirect::back();
+            }
+
+            
+        }
     }
+    
 }

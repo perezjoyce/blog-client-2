@@ -6,13 +6,15 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Uri;
 use Session;
 use Illuminate\Validation\Validator;
+use BlogPostController;
+use Redirect;
 
 class UserController extends Controller
 {   
     //DISPLAY DASHBOARD
-    public function getDashboard() {
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+    public function getDashboard(Request $request) {
+
+        $token = $request->session()->get('token');
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -28,23 +30,61 @@ class UserController extends Controller
         // dd($userId);
 
         $response = $client->get('/users/'. $userId);
+        // dd($response);
 
         $user = json_decode($response->getBody());
+        $response2 = $client->get('/finalBlogPosts');
+        $blogPosts = json_decode($response2->getBody());
 
-        return view('user.dashboard')->with(compact('user'));
+        //OBFUSCATE EMAIL
+        $email = $user->email;
+        $mail_parts = explode("@", $email);
+        $length = strlen($mail_parts[0]);
+        $show = floor($length/2);
+        $hide = $length - $show;
+        $replace = str_repeat("*", $hide);
+        $hiddenEmail = substr_replace ( $mail_parts[0] , $replace , $show, $hide ) . "@" . substr_replace($mail_parts[1], "**", 0, 2);
+
+        return view('user.dashboard')->with(compact('user', 'blogPosts', 'hiddenEmail'));
+    }
+
+    public function displayAllUsers(Request $request){
+        //$token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
+        $token = $request->session()->get('token');
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  =>2.0,
+            'headers' => $headers
+        ]);
+
+        $userId = Session::get('_id');
+
+        if(isset($userId)) {
+            $response2 = $client->get('/users/'. $userId);
+            $user = json_decode($response2->getBody());
+            $response = $client->get('/allUsers');
+            $blogUsers = json_decode($response->getBody());
+            return view('templates.user-list')->with(compact('user', 'blogUsers'));
+        } 
     }
 
     //CREATE AND LOGIN USER
     public function createUser(Request $request) {
 
+        // REGISTER
         $userData = [
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => $request->input('password')
         ];
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
+        $token = $request->session()->get('token');
+        
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -56,28 +96,17 @@ class UserController extends Controller
             'headers' => $headers
         ]);
         
-        //CREATE USER
         $response = $client->post('users', [
             'json' => $userData
         ]);
 
-        //DISPLAY PROFILE
-        // $userData = json_decode($response->getBody());
-        // return view('user.dashboard')->with(compact('userData'));
-        return redirect('/');
-    }    
-
-    //LOGIN USER
-    public function loginUser(Request $request) {
+        // LOGIN
         $userData = [
-            'email' => $request->input('login-email'),
-            'password' => $request->input('login-password')
+            'email' => $request->input('email'),
+            'password' => $request->input('password')
         ];
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-    
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
         ];
 
@@ -100,22 +129,80 @@ class UserController extends Controller
                 $userId = $userResponse->user->_id;
                 $request->session()->put('token', $userToken);
                 $request->session()->put('_id', $userId);
-                Session::flash("successMessage", "Hello, " . $userResponse->user->name);
-                return redirect('/dashboard');
+                Session::flash("successMessage", "Welcome to MAM, " . $userResponse->user->name ."! :)");
+                return Redirect::back();
             }
 
             Session::flash("errorMessage", "Invalid user credentials.");
-            return redirect('/');
-        } catch (Exception $e) {
+            return Redirect::back();
+        } catch (\Exception $e) {
             Session::flash("errorMessage", "Invalid user credentials.");
-            return redirect('/');
+            return Redirect::back();
+        }
+    }    
+
+    //LOGIN USER
+    public function loginUser(Request $request) {
+        $userData = [
+            'email' => $request->input('login-email'),
+            'password' => $request->input('login-password')
+        ];
+
+        $headers = [
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  => 2.0,
+            'headers' => $headers
+        ]);
+        
+        try {
+            $response = $client->post('/users/login', [
+                'json' => $userData
+            ]);
+ 
+            //DISPLAY PROFILE
+            $userResponse = json_decode($response->getBody());
+
+            if ($userResponse) {
+                $userToken = $userResponse->token;
+                $userId = $userResponse->user->_id;
+                $request->session()->put('token', $userToken);
+                $request->session()->put('_id', $userId);
+                Session::flash("successMessage", "Hello, " . $userResponse->user->name ."! :)");
+                return Redirect::back();
+            }
+
+            Session::flash("errorMessage", "Invalid user credentials.");
+            return Redirect::back();
+        } catch (\Exception $e) {
+            Session::flash("errorMessage", "Invalid user credentials.");
+            return Redirect::back();
         }
     }
 
     //LOGOUT 
     public function logoutUser(Request $request) {
 
-        $request->session()->forget(['token','_id']); //forget userToken and userId
+        $userId = Session::get('_id');
+
+        $token = $request->session()->get('token');
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  => 2.0,
+            'headers' => $headers
+        ]);
+        
+      
+        $response = $client->post('/users/logout/' . $userId);
+        $request->session()->forget(['token','_id']); 
         Session::flash("successMessage", "You are now logged out!");
         return redirect('/');
     }
@@ -124,12 +211,11 @@ class UserController extends Controller
     public function deleteUser(Request $request) {
 
         $userData = [
-            'email' => $request->input('email'),
-            'password' => $request->input('password')
+            'email' => $request->input('deactivation-email'),
+            'password' => $request->input('deactivation-password')
         ];
 
-                $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-        
+        $token = $request->session()->get('token');        
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -148,7 +234,7 @@ class UserController extends Controller
             $request->session()->forget(['token','_id']);
             Session::flash("successMessage", "Your account has been deactivated.");
             return redirect('/');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $response = $client->get('/users/me');
             $user = json_decode($response->getBody());
             Session::flash("errorMessage", "Invalid user credentials.");
@@ -161,13 +247,13 @@ class UserController extends Controller
 
         $userData = [
             'name' => $request->input('edit_name'),
+            'email' => $request->input('edit_email'),
             '_id' => $request->input('userId'),
             'plan' => $request->input('edit_plan'),
-            'password' => $request->input('edit_password')
+            'isAdmin' => $request->input('edit_role')
         ];
 
-        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q0YjI4ZWEyNDk5YjBhZDA2YWE3NTkiLCJpYXQiOjE1NTc0NDMyMTR9.3UZ9hFtBtWgO5J5IG8Ftg85l-mwBIFxr_sVXQMfKwx4';
-        
+        $token = $request->session()->get('token');
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -183,14 +269,57 @@ class UserController extends Controller
             $response = $client->patch('/users/'. $userData['_id'], [
                 'json' => $userData
             ]);
+
+            $userId = Session::get('_id');
+
+            if($userData['_id'] === $userId){
+                Session::flash("successMessage", "Your account has been successfully updated.");
+                return redirect('/dashboard');
+            }
             
-            Session::flash("successMessage", "Your account has been successfully updated.");
+            Session::flash("successMessage", $userData['_id'] . "'s account has been successfully updated.");
             return redirect('/dashboard');
 
-        } catch (Exception $e) {
-            $response = $client->get('/users/me');
+        } catch (\Exception $e) {
+            // $response = $client->get('/users/me');
             Session::flash("errorMessage", "Invalid user credentials.");
             return redirect('/dashboard');
         }
     }
+
+    public function subscription(Request $request) {
+
+        $token = $request->session()->get('token');
+        $userId = $request->session()->get('id');
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  => 2.0,
+            'headers' => $headers
+        ]);
+
+        try {
+            $response = $client->post('/users/me/subscribe', [
+                "json" => [
+                    'stripeToken' => $request->input('stripeToken')
+                ]
+            ]);
+
+            $userResponse = json_decode($response->getBody());
+
+            // dd($userResponse);
+            Session::flash("successMessage", "Your account has been updated to premium.");
+            return Redirect::back();
+
+
+        } catch(\Exception $e) {
+            Session::flash("errorMessage", "Invalid account.");
+            return Redirect::back();
+        }
+    }
+
 }

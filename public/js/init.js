@@ -2,21 +2,10 @@
     $(function(){
         
         // MATERIALIZE
-        $('.sidenav').sidenav();
-        $('.modal').modal();
+        M.AutoInit();
+        $('textarea#synopsis').characterCounter();
 
-
-        // TINYMCE
-        var dfreeHeaderConfig = {
-            selector: '.dfree-header',
-            menubar: false,
-            inline: true,
-            toolbar: false,
-            plugins: [ 'quickbars' ],
-            quickbars_insert_toolbar: 'undo redo',
-            quickbars_selection_toolbar: 'italic underline'
-          };
-          
+        // TINYMCE   
           var dfreeBodyConfig = {
             selector: '.dfree-body',
             menubar: false,
@@ -28,9 +17,9 @@
               'lists',
               'media',
               'table',
-              'textcolor',
               'image',
-              'quickbars'
+              'quickbars',
+              'lists'
             ],
             toolbar: false,
             quickbars_insert_toolbar: 'quicktable image',
@@ -38,7 +27,6 @@
             contextmenu: 'inserttable | cell row column deletetable'
           };
           
-          tinymce.init(dfreeHeaderConfig);
           tinymce.init(dfreeBodyConfig);
         }); 
 

@@ -5,12 +5,14 @@ use App\Http\Controllers\BlogPostController;
 
 
 //PAGES
-Route::get('/', 'BlogPostController@displayAllBlogPosts');
+Route::get('/', 'BlogPostController@displayHomePage');
 
 Route::get('dashboard', 'UserController@getDashboard');
 
 
 //USER
+Route::get('users', 'UserController@displayAllUsers');
+
 Route::get('register', function () {
     return view('templates.register');
 })->name('register');
@@ -25,8 +27,11 @@ Route::post('delete-user', 'UserController@deleteUser');
 
 Route::post('edit-user', 'UserController@editUser');
 
+Route::post('subscription', 'UserController@subscription');
 
 //BLOG POSTS
+Route::get('write-blog-post', 'BlogPostController@writeBlogPostForm');
+
 Route::post('create-blog-post', 'BlogPostController@createBlogPost');
 
 Route::get('get-blogpost/{blogPostId}', 'BlogPostController@getBlogPost');

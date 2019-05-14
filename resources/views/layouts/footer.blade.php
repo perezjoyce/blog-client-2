@@ -1,37 +1,57 @@
-  <footer class="page-footer orange">
+  <footer class="page-footer mt-7" id="main-footer">
+    <br>
     <div class="container">
       <div class="row">
-        <div class="col l6 s12">
-          <h5 class="white-text">Company Bio</h5>
-          <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
-
-
+        <div class="col l3 s12">
+          <h4 class="grey-text text-lighten-2">Learn, laugh, and pour me a vodka.</h4>
+        </div>
+        <div class="col l3">
         </div>
         <div class="col l3 s12">
-          <h5 class="white-text">Settings</h5>
+          <h6 class="grey-text text-lighten-2">Categories</h6>
           <ul>
-            <li><a class="white-text" href="#!">Link 1</a></li>
-            <li><a class="white-text" href="#!">Link 2</a></li>
-            <li><a class="white-text" href="#!">Link 3</a></li>
-            <li><a class="white-text" href="#!">Link 4</a></li>
+            <li><a class="f-link" href="#!">All Blog Posts</a></li>
+            <li><a class="f-link" href="#!">Education</a></li>
+            <li><a class="f-link" href="#!">Web Development</a></li>
+            <li><a class="f-link" href="#!">Mamahood</a></li>
           </ul>
         </div>
         <div class="col l3 s12">
-          <h5 class="white-text">Connect</h5>
+          <h6 class="grey-text text-lighten-2">Support</h6>
           <ul>
-            <li><a class="white-text" href="#!">Link 1</a></li>
-            <li><a class="white-text" href="#!">Link 2</a></li>
-            <li><a class="white-text" href="#!">Link 3</a></li>
-            <li><a class="white-text" href="#!">Link 4</a></li>
+            <li><a class="f-link" href="#!">Forum</a></li>
+            <li><a class="f-link" href="#!">FAQ</a></li>
+            <li><a class="f-link" href="#!">About MAM</a></li>
           </ul>
         </div>
       </div>
     </div>
+
+    <div class="container">
+      <div class="row">
+      <hr class="line">
+      </div>
+    </div>
+  
     <div class="footer-copyright">
       <div class="container">
-      Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+        <div class="row">
+          <div class="col l6 s12 left">
+            <a href="#" class="f-link"><i class="fab fa-twitter fa-2x"></i></a>
+            &nbsp;
+            <a href="#" class="f-link"><i class="fab fa-instagram fa-2x"></i></a>
+            &nbsp;
+            <a href="#" class="f-link"><i class="fab fa-facebook-square fa-2x"></i></a>
+          </div>
+          <div class="col l6 s12">
+            <p class='right f-p'>Coded in MELN &nbsp;</a> &#169; <a class="grey-text text-lighten-1" href="https://perezjoyce.github.io/portfolio" target="_blank" target="_blank.com">&nbsp;Joyce Perez</a></p>
+          </div>
+          
+        </div>
+      
       </div>
     </div>
+    <br>
   </footer>
 
 

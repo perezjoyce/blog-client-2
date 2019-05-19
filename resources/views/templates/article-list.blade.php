@@ -16,6 +16,7 @@
                   <th>Created At</th>
                   <th>Updated At</th>
                   <th>Status</th>
+                  <th>Featured</th>
                   <th>Action</th>
               </tr>
             </thead>
@@ -30,17 +31,22 @@
                     <td>{{ date('F j, Y', strtotime($blogPost->updatedAt)) }}</td>
                     <td>{{ ucfirst($blogPost->status) }}</td>
                     <td>
-                        <a class="waves-effect waves-light btn blue" 
-                            href="{{ url('get-blogpost/' . $blogPost->_id) }}"><i class="material-icons">create</i></a>
-                           
-
-                        <a class="waves-effect waves-light btn modal-trigger btn red deleteBlogTrigger" 
-                            href="#deleteBlog" 
-                            data-id='{{ $blogPost->_id }}'
-                            data-title="{{ $blogPost->title }}"
-                            data-author="{{ $blogPost->author }}"
-                            data-createdat="{{ date('F j, Y', strtotime($blogPost->createdAt)) }}"
-                            ><i class="material-icons">delete</i></a>
+                      @if($blogPost->isFeatured)
+                        <i class="material-icons yellow-text text-darken-3">star</i>
+                      @else
+                        <i class="material-icons grey-text text-lighten-2">star_border</i>
+                      @endif
+                    </td>
+                    <td>
+                      <a class="waves-effect waves-light btn blue" 
+                        href="{{ url('get-blogpost/' . $blogPost->_id) }}"><i class="material-icons">create</i></a>
+                      <a class="waves-effect waves-light btn modal-trigger btn red deleteBlogTrigger" 
+                        href="#deleteBlog" 
+                        data-id='{{ $blogPost->_id }}'
+                        data-title="{{ $blogPost->title }}"
+                        data-author="{{ $blogPost->author }}"
+                        data-createdat="{{ date('F j, Y', strtotime($blogPost->createdAt)) }}"
+                        ><i class="material-icons">delete</i></a>
                     </td>
                 </tr>
               @endforeach

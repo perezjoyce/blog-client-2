@@ -31,11 +31,12 @@
                         <td>{{ ucfirst($blogUser->plan) }}</td>
                         <td>{{ date('F j, Y', strtotime($blogUser->createdAt)) }}</td>
                         <td>
-                            <a class="waves-effect waves-light btn modal-trigger" 
+                            <a class="waves-effect waves-light btn blue modal-trigger" 
                                 id='editUserTrigger' 
                                 href="#editProfileForm" 
                                 data-id='{{ $blogUser->_id }}'
                                 data-name="{{ $blogUser->name }}"
+                                data-email="{{ $blogUser->email }}"
                                 data-role="{{ $blogUser->isAdmin }}"
                                 data-plan="{{ $blogUser->plan }}"
                                 >EDIT</a>
@@ -52,13 +53,16 @@
 
     <!-- Modal Structure -->
 <div id="editProfileForm" class="modal">
+    <br>
     <div class="modal-content">
-	  <h4>Edit Profile</h4>
+      <h4>Edit Profile</h4>
+      <br>
         <form action="edit-user" method="post">
-		
-		   	<label>Username</label>
-			<input type="text" name="edit_name" id="edit_name">
-            <input type="text" name="userId" id="userId">
+        @csrf
+            <label>Username</label>
+            <input type="hidden" name="userId" id="userId">
+			<input type="hidden" name="edit_name" id="edit_name">
+            <input type="hidden" name="edit_email" id="edit_email">
             
             <label>Role</label>
 			<select class="browser-default" name="edit_role" id="edit_role">
@@ -70,7 +74,9 @@
             </select>
             
 			<br>
-            <input type="submit" value="Apply Changes" class='btn' id="saveUserChanges">
+
+            <button class="btn-large blue waves-effect waves-light" type="submit" id="saveUserChanges">Apply Changes
+            </button>
         </form>
     </div>
   </div>

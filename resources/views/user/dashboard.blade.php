@@ -62,7 +62,7 @@
 				@csrf
 				<div class="row">
 					<input type="hidden" name="userId" id="userId" value="{{ $user->_id }}">
-					<input type="hidden" name="edit_role" id="edit_role" value="false">
+					<input type="hidden" name="edit_role" id="edit_role" value="{{ $user->isAdmin }}">
 					<input type="hidden" name="edit_plan" id="edit_plan" value="{{ $user->plan }}">
 
 					<div class="input-field">

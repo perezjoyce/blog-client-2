@@ -265,25 +265,29 @@ class UserController extends Controller
             'headers' => $headers
         ]);
 
+        $userId = Session::get('_id');
+
         try {
-            $response = $client->patch('/users/'. $userData['_id'], [
-                'json' => $userData
-            ]);
-
-            $userId = Session::get('_id');
-
-            if($userData['_id'] === $userId){
+            
+            if ($userId === $userData['_id']) {
+                $response = $client->patch('/users/'. $userData['_id'], [
+                    'json' => $userData
+                ]);
                 Session::flash("successMessage", "Your account has been successfully updated.");
                 return redirect('/dashboard');
-            }
-            
-            Session::flash("successMessage", $userData['_id'] . "'s account has been successfully updated.");
-            return redirect('/dashboard');
+            } 
 
+            $response = $client->patch('/users/'. $userData['_id'] . '/admin', [
+                'json' => $userData
+            ]);
+            // dd($response);
+            Session::flash("successMessage", "The account of " . $userData['name'] . " has been successfully updated.");
+            return Redirect::back();
+            
         } catch (\Exception $e) {
             // $response = $client->get('/users/me');
             Session::flash("errorMessage", "Invalid user credentials.");
-            return redirect('/dashboard');
+            return Redirect::back();
         }
     }
 

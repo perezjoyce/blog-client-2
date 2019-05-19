@@ -39,10 +39,13 @@ $(document).ready(function(){
     $(document).on('click', '#editUserTrigger', function() {
       const userId = $(this).data('id');
       const userName = $(this).data('name');
+      const userEmail = $(this).data('email');
       const userRole = $(this).data('role'); //isAdmin: true or false
       const userPlan = $(this).data('plan');
 
+      // alert(userEmail);
       $('#edit_name').val(userName);
+      $('#edit_email').val(userEmail);
       $('#userId').val(userId);
 
       var options = $('#edit_plan').find('option');
@@ -55,9 +58,11 @@ $(document).ready(function(){
         // set value property of opt
         opt.value = userPlan;
         opt.selected = true;
+        opt.classList.add("ucfirst");
         $('#edit_plan')[0].add(opt);
 
         var opt2 = document.createElement('option');
+        opt2.classList.add("ucfirst");
         // create text node to add to option element (opt)
 
         var userPlan2 = userPlan == 'premium' ? 'Free' : 'Premium';

@@ -64,6 +64,12 @@ img#featured-article-img {
   font-size:10px;
   font-weight:700;
 }
+.medium-text{
+  font-size:12px!important;
+}
+.ucfirst{
+  text-transform: capitalize;
+}
 .icon-block {
   padding: 0 15px;
 }

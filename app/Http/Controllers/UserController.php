@@ -33,8 +33,6 @@ class UserController extends Controller
         // dd($response);
 
         $user = json_decode($response->getBody());
-        $response2 = $client->get('/finalBlogPosts');
-        $blogPosts = json_decode($response2->getBody());
 
         //OBFUSCATE EMAIL
         $email = $user->email;
@@ -45,7 +43,7 @@ class UserController extends Controller
         $replace = str_repeat("*", $hide);
         $hiddenEmail = substr_replace ( $mail_parts[0] , $replace , $show, $hide ) . "@" . substr_replace($mail_parts[1], "**", 0, 2);
 
-        return view('user.dashboard')->with(compact('user', 'blogPosts', 'hiddenEmail'));
+        return view('user.dashboard')->with(compact('user', 'hiddenEmail'));
     }
 
     public function displayAllUsers(Request $request){
@@ -73,7 +71,7 @@ class UserController extends Controller
         } 
     }
 
-    //CREATE AND LOGIN USER
+    //CREATE AND THEN LOGIN USER
     public function createUser(Request $request) {
 
         // REGISTER
@@ -82,6 +80,14 @@ class UserController extends Controller
             'email' => $request->input('email'),
             'password' => $request->input('password')
         ];
+
+        $rules = array(
+    		"name" => "required",
+    		"email" => "required",
+    		"password" => "required",
+    	);
+        
+        $this->validate($request, $rules);
 
         $token = $request->session()->get('token');
         
@@ -133,16 +139,24 @@ class UserController extends Controller
                 return Redirect::back();
             }
 
-            Session::flash("errorMessage", "Invalid user credentials.");
+            Session::flash("errorMessage", "An error occured. Please try again.");
             return Redirect::back();
         } catch (\Exception $e) {
-            Session::flash("errorMessage", "Invalid user credentials.");
+            Session::flash("errorMessage", "An error occured. Please try again.");
             return Redirect::back();
         }
     }    
 
     //LOGIN USER
     public function loginUser(Request $request) {
+
+        $rules = array(
+            "login-email" => "required",
+            "login-password" => "required",
+        );
+        
+        $this->validate($request, $rules);
+
         $userData = [
             'email' => $request->input('login-email'),
             'password' => $request->input('login-password')
@@ -209,6 +223,12 @@ class UserController extends Controller
 
     //DEACTIVATE 
     public function deleteUser(Request $request) {
+        $rules = array(
+            "deactivation-email" => "required",
+            "deactivation-password" => "required",
+        );
+        
+        $this->validate($request, $rules);
 
         $userData = [
             'email' => $request->input('deactivation-email'),
@@ -244,6 +264,15 @@ class UserController extends Controller
 
     //EDIT USER
     public function editUser(Request $request) {
+
+        $rules = array(
+            "edit_name" => "required",
+            "edit_plan" => "required",
+            "edit_role" => "required",
+            "edit_email" => "required"
+        );
+        
+        $this->validate($request, $rules);
 
         $userData = [
             'name' => $request->input('edit_name'),
@@ -294,7 +323,7 @@ class UserController extends Controller
     public function subscription(Request $request) {
 
         $token = $request->session()->get('token');
-        $userId = $request->session()->get('id');
+        $userId = $request->session()->get('_id');
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
@@ -306,24 +335,18 @@ class UserController extends Controller
             'headers' => $headers
         ]);
 
-        try {
-            $response = $client->post('/users/me/subscribe', [
-                "json" => [
-                    'stripeToken' => $request->input('stripeToken')
-                ]
-            ]);
+        $response = $client->post('/users/me/subscribe', [
+            "json" => [
+                'stripeToken' => $request->input('stripeToken')
+            ]
+        ]);
 
-            $userResponse = json_decode($response->getBody());
+        $userResponse = json_decode($response->getBody());
 
-            // dd($userResponse);
-            Session::flash("successMessage", "Your account has been updated to premium.");
-            return Redirect::back();
+        // dd($userResponse);
+        Session::flash("successMessage", "Your account has been updated to premium.");
+        return Redirect::back();
 
-
-        } catch(\Exception $e) {
-            Session::flash("errorMessage", "Invalid account.");
-            return Redirect::back();
-        }
     }
 
 }

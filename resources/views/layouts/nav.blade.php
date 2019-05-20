@@ -56,27 +56,26 @@
   <nav class="blue-grey lighten-5 z-depth-0">
     <div class="container nav-wrapper center">
       <ul class="center hide-on-small-only">
-        <li class="active center"><a href="#" class="grey-text text-darken-2">All Blog Posts</a></li>
-        <li><a href="#" class="grey-text text-darken-2">Education</a></li>
-        <li><a href="#" class="grey-text text-darken-2">Web Dev</span></a></li>
-        <li><a href="#" class="grey-text text-darken-2">Mamahood</a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/' ? 'active' : '' }} center"><a href="{{ url('/') }}" class="grey-text text-darken-2">All Blog Posts</a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%201' ? 'active' : '' }} center"><a href="{{ url('blog-posts/category 1') }}" class="grey-text text-darken-2">Education</span></a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%202' ? 'active' : '' }} center"><a href="{{ url('blog-posts/category 2') }}" class="grey-text text-darken-2">Web Dev</span></a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%203' ? 'active' : '' }} center"><a href="{{ url('blog-posts/category 3') }}" class="grey-text text-darken-2">Mamahood</span></a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%204' ? 'active' : '' }} center"><a href="{{ url('blog-posts/category 4') }}" class="grey-text text-darken-2">Training</span></a></li>
       </ul>
      
       <!-- Dropdown Version for small screen-->
       <a class="dropdown-trigger grey-text text-darken-2 left hide-on-med-and-up" href="#!" data-target="manage-categories">Categories<i class="material-icons right">arrow_drop_down</i></a>
       
       <ul id="manage-categories" class="dropdown-content grey-text text-darken-3  hide-on-med-and-up">
-        <li class="active center"><a href="#" class="grey-text text-darken-2">All Blog Posts</a></li>
-        <li><a href="#" class="grey-text text-darken-2">Education</a></li>
-        <li><a href="#" class="grey-text text-darken-2">Web Dev</span></a></li>
-        <li><a href="#" class="grey-text text-darken-2">Mamahood</a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/' ? 'active' : '' }} center"><a href="{{ url('/') }}" class="grey-text text-darken-2">All Posts</a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%201' ? 'active' : '' }} center"><a href="{{ url('/category 1') }}" class="grey-text text-darken-2">Education</span></a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%202' ? 'active' : '' }} center"><a href="{{ url('/category 2') }}" class="grey-text text-darken-2">Web Dev</span></a></li>
+        <li class="{{ url()->current() == 'http://localhost/blog-client/public/category%203' ? 'active' : '' }} center"><a href="{{ url('/category 3') }}" class="grey-text text-darken-2">Mamahood</span></a></li>
       </ul>
     </div>
   </nav>
 
-  
-
-  <!-- Modals -->
+  <!-- MODALS -->
   <div id="loginForm" class="modal">
     <div class="modal-content">
         <br>
@@ -103,26 +102,6 @@
     </div>
   </div>
 
-  @if(isset($user))
-  <div id="logoutForm" class="modal">
-    <div class="modal-content">
-        <br>
-        <h4>Log Out</h4>
-        <br>
-        <p>Do you want to be logged out of this webiste?</p>
-        <form action="{{url('logout')}}" method="post">
-          {{ csrf_field() }}
-          <input type="hidden" name="_id" id="_id" value="{{ $user->_id }}">
-          <br>
-          <button class="btn-large blue waves-effect waves-light" type="submit" name="logout">Yes, Please.
-            <i class="material-icons right">power_settings_new</i>
-          </button>
-        </form>
-      </div>
-  </div>
-  @endif
-
-
  
   <div id="registerForm" class="modal">
     <div class="modal-content" id="register-modal">
@@ -143,7 +122,7 @@
           </div>
 
           <div class="input-field">
-            <input type="password" name="password" id="password" class="validate">
+            <input type="password" name="password" id="password" class="validate" minlength="6">
             <label for="password">Password</label>
           </div>
 
@@ -155,8 +134,25 @@
     </div>
   </div>
 
-  
-  <!-- Modal Structure -->
+  @if(isset($user))
+  <div id="logoutForm" class="modal">
+    <div class="modal-content">
+        <br>
+        <h4>Log Out</h4>
+        <br>
+        <p>Do you want to be logged out of this webiste?</p>
+        <form action="{{url('logout')}}" method="post">
+          {{ csrf_field() }}
+          <input type="hidden" name="_id" id="_id" value="{{ $user->_id }}">
+          <br>
+          <button class="btn-large blue waves-effect waves-light" type="submit" name="logout">Yes, Please.
+            <i class="material-icons right">power_settings_new</i>
+          </button>
+        </form>
+      </div>
+  </div>
+  @endif
+
 	<div id="stripeForm" class="modal">
 		<div class="modal-content">
 			<br>
@@ -183,4 +179,4 @@
 				</button>
 			</form>
 		</div>
-	</div>
+  </div>

@@ -14,7 +14,6 @@ class BlogPostController extends Controller
 
     public function displayHomePage(Request $request) {
 
-        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
         $token = $request->session()->get('token');    
 
         $headers = [
@@ -33,20 +32,47 @@ class BlogPostController extends Controller
 
         try {
             $userId = Session::get('_id');
-            $response2 = $client->get('/users/'. $userId);
-            $user = json_decode($response2->getBody());
+            $response3 = $client->get('/users/'. $userId);
+            $user = json_decode($response3->getBody());
             return view('welcome')->with(compact('blogPosts', 'user'));
         } catch (\Exception $e) {
-
             return view('welcome')->with(compact('blogPosts'));
         }
         
     }
 
+    // TO BE INTEGRATED WITH DISPLAY HOMEPAGE
+    public function displayByCategory(Request $request, $category) {
+
+        // dd($category);
+        $token = $request->session()->get('token');    
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ];
+
+        $client = new Client([
+            'base_uri' => 'http://127.0.0.1:3000',
+            'timeout'  =>2.0,
+            'headers' => $headers
+        ]);
+            
+        $response = $client->get('/blogPosts/category/' . $category);
+        $blogPosts = json_decode($response->getBody());
+
+        try {
+            $userId = Session::get('_id');
+            $response3 = $client->get('/users/'. $userId);
+            $user = json_decode($response3->getBody());
+            return view('welcome')->with(compact('blogPosts', 'user'));
+        } catch (\Exception $e) {
+            return view('welcome')->with(compact('blogPosts'));
+        }
+    }
+
 
     public function displayAllBlogPosts(Request $request) {
-
-        // $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Y2Q4ZTk0NDUwNjM4MDI3YjAzOWIwYWQiLCJpYXQiOjE1NTc3MTkzNjR9.GgLecg32XQxU5dzo6zIGLfFAJN8NGbelb7YI4qx8Wm0';
     
         $token = $request->session()->get('token');    
 
@@ -197,8 +223,21 @@ class BlogPostController extends Controller
     }
 
     public function createBlogPost(Request $request) {
+        // dd($request->all());
 
-        $token = $request->session()->get('token');    
+        $rules = array(
+            "author" => "required",
+            "title" => "required",
+            "synopsis" => "required",
+            "category" => "required",
+            "isFree" => "required",
+            "status" => "required",
+            "body" => "required",
+            "photo" => "required"
+        );
+        
+        $this->validate($request, $rules);
+
         $blogPostData = [
             'author' => $request->input('author'),
             'title' => $request->input('title'),
@@ -207,10 +246,10 @@ class BlogPostController extends Controller
             'isFree' => $request->input('isFree') === "true" ? true : false,
             'isFeatured' => $request->input('isFeatured') == "on" ? true : false,
             'status' => $request->input('status'),
-            'body' => html_entity_decode($request->input('body'))
+            'body' => html_entity_decode($request->input('body')),
         ];
-        
-        $userId = Session::get('_id');
+
+        $token = $request->session()->get('token');    
 
         $headers = [
             'Authorization' => 'Bearer ' . $token,
@@ -229,31 +268,38 @@ class BlogPostController extends Controller
 
         $blogPost = json_decode($response->getBody());
 
-        // $userReponse = $client->get('/users/'. $userId);
-        // $user = json_decode($userReponse->getBody());
-
         try {
 
-            $contents = file_get_contents($request->photo->path());
+            if($request->hasFile('photo')) {
+                $contents = file_get_contents($request->photo->path());
 
-            $client2 = new Client([
-                'base_uri' => 'http://127.0.0.1:3000',
-                'timeout'  => 5.0,
-                'headers' => $headers
-            ]);
-    
-            $client2->request('POST', '/blogPosts/' . $blogPost->_id . '/photo', [
-                'multipart' =>  [
-                    [
-                        'name'     => 'photo',
-                        'contents' => $contents,
-                        'filename' => $request->file('photo')->getClientOriginalName()
+                $headers2 = [
+                    'Authorization' => 'Bearer ' . $token,
+                    'Accept' => 'application/json'
+                ];
+
+                $client2 = new Client([
+                    'base_uri' => 'http://127.0.0.1:3000',
+                    'timeout'  => 5.0,
+                    'headers' => $headers2
+                ]);
+        
+                $client2->request('POST', '/blogPosts/' . $blogPost->_id . '/photo', [
+                    'multipart' =>  [
+                        [
+                            'name'     => 'photo',
+                            'contents' => $contents,
+                            'filename' => $request->file('photo')->getClientOriginalName()
+                        ]
                     ]
-                ]
-            ]);
-    
+                ]);
+
+                Session::flash("successMessage", "Blog post has been successfully saved!");
+                return redirect('get-blogpost/'. $blogPost->_id);
+            }
+
             Session::flash("successMessage", "Blog post has been successfully saved!");
-            return redirect('get-blogpost/'. $blogPost->_id);
+            return redirect('edit-blogpost/'. $blogPost->_id);
         } catch (\Exception $e) {
             Session::flash("errorMessage", "ERROR: File is too large!");
             return Redirect::back();
@@ -308,6 +354,18 @@ class BlogPostController extends Controller
     }
 
     public function saveBlogPostEdits(Request $request, $blogPostId) {
+
+        $rules = array(
+            "author" => "required",
+            "title" => "required",
+            "synopsis" => "required",
+            "category" => "required",
+            "isFree" => "required",
+            "status" => "required",
+            "body" => "required"
+        );
+        
+        $this->validate($request, $rules);
 
         $token = $request->session()->get('token'); 
         $blogPostData = [

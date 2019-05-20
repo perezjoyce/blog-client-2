@@ -7,8 +7,9 @@ use App\Http\Controllers\BlogPostController;
 //PAGES
 Route::get('/', 'BlogPostController@displayHomePage');
 
-Route::get('dashboard', 'UserController@getDashboard');
+Route::get('blog-posts/{category}', 'BlogPostController@displayByCategory');
 
+Route::get('dashboard', 'UserController@getDashboard');
 
 //USER
 Route::get('users', 'UserController@displayAllUsers');

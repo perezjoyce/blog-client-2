@@ -13,9 +13,10 @@
 			<p class="grey-text text-lighten-1">Email</p>
 			<h5 class="grey-text text-darken-2">{{ $hiddenEmail }}</h5>
 		</div>
+		
 		<div class="section">
 			<p class="grey-text text-lighten-1">Subscription</p>
-			<h5 class="grey-text text-darken-2">{{ ucfirst($user->plan) }}</h5>
+			<h5 class="grey-text text-darken-2">{{ $user->isAdmin === true ? "N/A (Admin)" : ucfirst($user->plan) }}</h5>
 		</div>
 	</div>
 
@@ -75,20 +76,11 @@
 					</div>
 				</div>
 			
-				<!-- <label>Subscription Plan</label>
-				<select class="browser-default" name="edit_plan" id="edit_plan" required>
-					<option value="{{ $user->plan }}" selected>{{ ucfirst($user->plan) }}</option>
-					@if($user->plan === 'free')
-						<option value="premium">Premium</option>
-					@else
-						<option value="free">Free</option>
-					@endif
-				</select> -->	
-				<button class="btn blue waves-effect waves-light" type="submit" name="login">Apply Changes
+				<button class="btn blue waves-effect waves-light" type="submit">Apply Changes
 					<i class="material-icons right">create</i>
 				</button>
 			</form>
-			@if($user->plan == "free")
+			@if($user->plan == "free" && $user->isAdmin == false)
 				<br>
 				<p>Do you want to upgrade your subscription to Premium?</p>
 				<a class="btn green waves-effect waves-light modal-trigger" href="#stripeForm">Upgrade

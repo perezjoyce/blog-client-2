@@ -6,11 +6,10 @@
 
 	@if($blogPost->isFree || $blogPost->isFeatured)
 	<div class="section no-pad-bot" id="index-banner">
-        <div class="container">
+        <img src="data:image/jpg;base64, {{$blogPost->photo}}" id="featured-article-img" class="no-pad-bot">
+        <div class="container" id="blogPostHeading">
           <div class="row">
-            <div class="col l6 m6 s12">
-              <img src="data:image/jpg;base64, {{$blogPost->photo}}" id="featured-article-img">
-            </div>
+            <div class="col l6 m6 s12"></div>
             <div class="col l6 m6 s12">
               <div class="container">
                 <div class="row">

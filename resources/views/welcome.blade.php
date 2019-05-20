@@ -5,12 +5,11 @@
   @foreach($blogPosts as $blogPost)
     @if($blogPost->isFeatured)
       <div class="section no-pad-bot" id="index-banner">
-      <a href="get-blogpost/{{ $blogPost->_id }}" id="download-button" >
-        <div class="container">
+      <a href="get-blogpost/{{ $blogPost->_id }}">
+      <img src="data:image/jpg;base64, {{$blogPost->photo}}" id="featured-article-img" class="no-pad-bot">
+        <div class="container" id="blogPostHeading">
           <div class="row">
-            <div class="col l6 m6 s12">
-              <img src="data:image/jpg;base64, {{$blogPost->photo}}" id="featured-article-img">
-            </div>
+            <div class="col l6 m6 s12"></div>
             <div class="col l6 m6 s12">
               <div class="container">
                 <div class="row">
@@ -27,9 +26,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="row center"> -->
-            <!-- <h6 class="header col s12 grey-text text-lighten-5">{{ $blogPost->author }} | {{ date('F j, Y', strtotime($blogPost->createdAt)) }}</h5> -->
-          <!-- </div> -->
          </a>
           </div>
         </div>
@@ -37,9 +33,11 @@
     @endif
   @endforeach
 
+ 
+
   @if(!isset($user))
   <!-- require login for premium -->
-    <div class="container mt-7">
+    <div class="container mt-5">
       <div class="row">
     
         @foreach($blogPosts as $blogPost)
@@ -89,7 +87,7 @@
   
   @else
   <!-- check if user plan is premium -->
-    <div class="container mt-7">
+    <div class="container mt-7" id="blogPostContainer">
       <div class="row">
 
         <!-- IF USER IS NOT ADMIN-->
@@ -193,28 +191,3 @@
 
 @stop
 
-<!-- Modal Structure -->
-<div id="stripeForm" class="modal">
-    <div class="modal-content">
-	  <h4>Stripe</h4>
-        <form action="{{ url('subscription')}}" method="post" id="payment-form">
-          @csrf
-            <div class="form-row">
-              <label for="card-element">
-                Credit or debit card
-              </label>
-              <div id="card-element">
-                <!-- A Stripe Element will be inserted here. -->
-              </div>
-
-              <!-- Used to display Element errors. -->
-              <div id="card-errors" role="alert"></div>
-            </div>
-
-            <button>Submit Payment</button>
-        </form>
-    </div>
-  </div>
-
-
-  

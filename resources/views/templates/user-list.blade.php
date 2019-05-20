@@ -9,6 +9,7 @@
             <table>
                 <thead>
                 <tr>
+                    <th></th>
                     <th>#</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -22,14 +23,16 @@
 
                 <tbody>
                 @foreach($blogUsers as $blogUser)
-                    <tr>
+                    <tr class="{{ $user->_id === $blogUser->_id ? 'grey lighten-2' : '' }}">
+                        <td></td>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ ucwords($blogUser->name) }}</td>
                         <td>{{ $blogUser->email }}</td>
                         <td>{{ $blogUser->isAdmin === true ? "Admin" : "User" }}</td>
                         <td>{{ ucfirst($blogUser->status) }}</td>
-                        <td>{{ ucfirst($blogUser->plan) }}</td>
+                        <td>{{ $blogUser->isAdmin === true ? "N/A (Admin)" : ucfirst($blogUser->plan) }}</td>
                         <td>{{ date('F j, Y', strtotime($blogUser->createdAt)) }}</td>
+                        @if($user->_id !== $blogUser->_id)
                         <td>
                             <a class="waves-effect waves-light btn blue modal-trigger" 
                                 id='editUserTrigger' 
@@ -41,6 +44,11 @@
                                 data-plan="{{ $blogUser->plan }}"
                                 >EDIT</a>
                         </td>
+                        @else
+                        <td>
+                            <a class="waves-effect waves-light btn blue modal-trigger" href="{{ url('dashboard')}}">EDIT</a>
+                        </td>
+                        @endif
                     </tr>
                 @endforeach
                 </tbody>

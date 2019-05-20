@@ -77,7 +77,7 @@
 					});
 				</script>
 
-				<p class="label-text" style="font-size: 0.8rem;color: #9e9e9e;">Change/Add cover photo</p>
+				<p class="label-text" style="font-size: 0.8rem;color: #9e9e9e;">{{ $blogPost->photo == "AA==" ? "Add " : "Change "}} cover photo</p>
 				<div class="file-field input-field">
 					<div class="btn">
 						<span>File</span>
@@ -88,12 +88,15 @@
 						<input class="file-path validate" type="text">
 					</div>
 				</div>
-
+				
+				@if($blogPost->photo !== "AA==")
 				<div class="row">
-					<img src="data:image/jpg;base64, {{$blogPost->photo}}" id="featured-article-img">
+					<img src="data:image/jpg;base64, {{$blogPost->photo}}" id="featured-article-img" class="no-pad-bot">
 				</div>
+				@endif
+			
 				<br>
-
+					
 				<p class="label-text" style="font-size: 0.8rem;color: #9e9e9e;">Blog Content</p>
 				<div class="row">
 					<div class='col s12 card-panel hoverable'>
